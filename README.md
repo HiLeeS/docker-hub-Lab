@@ -1,4 +1,4 @@
-# Docker 이미지 최적화 데모
+# Docker 이미지 최적화 전략 비교 및 검증
 
 Spring Boot REST API 앱을 기반으로, Docker 이미지 최적화 단계를 5가지 Dockerfile로 비교합니다.
 
@@ -118,8 +118,8 @@ DOCKER_BUILDKIT=1 docker build -f Dockerfile.5-buildkit -t demo-5-buildkit .
 ### 2-1. 초기 빌드
 
 <p align="left">
-  <img src="./images/buildkit_1.png" width="65%" alt="초기 빌드1">
-  <img src="./images/buildkit_2.png" width="65%" alt="초기 빌드2">
+  <img src="./images/buildkit_1.png" width="85%" alt="초기 빌드1">
+  <img src="./images/buildkit_2.png" width="85%" alt="초기 빌드2">
 </p>
 
 - 캐시 마운트 과정이 필요
@@ -127,7 +127,7 @@ DOCKER_BUILDKIT=1 docker build -f Dockerfile.5-buildkit -t demo-5-buildkit .
 ### 2-2. 코드 수정 후 재빌드
 
 <p align="left">
-  <img src="./images/buildkit_3.png" width="65%" alt="재빌드">
+  <img src="./images/buildkit_3.png" width="85%" alt="재빌드">
 </p>
 
 | 빌드 방식 | 최초 빌드 (Cold) | 소스 수정 후 재빌드 (Hot) | 핵심 차이 |
@@ -192,7 +192,7 @@ docker history demo-5-buildkit
 ```
 
 <p align="left">
-  <img src="./images/layer_detail.png" width="65%" alt="레이어 상세">
+  <img src="./images/layer_detail.png" width="85%" alt="레이어 상세">
 </p>
 
 `docker history` 실행 시 나타나는 `<missing>` 은 **캐시로 활용되는 레이어**입니다.
