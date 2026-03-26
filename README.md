@@ -1,8 +1,8 @@
-# Docker 이미지 최적화 전략 비교 및 검증
+# 📈 Docker 이미지 최적화 전략 비교 및 검증
 
 Spring Boot REST API 앱을 기반으로, Docker 이미지 최적화 단계를 5가지 Dockerfile로 비교합니다.
 
-## 프로젝트 구조
+## 📂 프로젝트 구조
 
 ```
 docker-optimization-demo/
@@ -25,7 +25,7 @@ docker-optimization-demo/
 ```
 <br/>
 
-## API 목록
+## 📋 API 목록
 
 | Method | Path | 설명 |
 |--------|------|------|
@@ -36,7 +36,7 @@ docker-optimization-demo/
 
 <br/>
 
-## 최적화 흐름 요약
+## ✨ 최적화 흐름 요약
 
 | 단계 | Dockerfile | 핵심 변경 | 예상 크기 | 감소율 |
 |------|------------|-----------|-----------|--------|
@@ -49,7 +49,7 @@ docker-optimization-demo/
 <br/>
 
 
-## 초기 세팅
+## 🛠️ 초기 세팅
 
 프로젝트에는 Gradle Wrapper 바이너리(`gradle-wrapper.jar`)가 포함되어 있지 않습니다.
 로컬에 Gradle이 설치되어 있다면 아래 명령으로 Wrapper를 생성하세요:
@@ -69,7 +69,7 @@ gradle wrapper --gradle-version 8.10
 
 <br/>
 
-## 빌드 방법
+## ⚙️ 빌드 방법
 
 ### 전체 빌드 & 비교
 ```bash
@@ -137,7 +137,7 @@ DOCKER_BUILDKIT=1 docker build -f Dockerfile.5-buildkit -t demo-5-buildkit .
 
 ---
 
-## 각 단계별 트레이드오프
+## ⚖️ 각 단계별 트레이드오프
 
 ### 1. 기본형
 - **장점**: 단순함, 디버깅 편리 (JDK 도구 모두 사용 가능)
@@ -240,7 +240,7 @@ ENTRYPOINT ["java", "-jar", "app.jar"] # exec form, 셸 불필요
 
 ## 💡 주요 분석 포인트
 
-### 왜 5번(BuildKit) 방식이 가장 효율적인가?
+### 🔍 왜 5번(BuildKit) 방식이 가장 효율적인가?
 1. **레이어 분리 전략**  
    `build.gradle`, `settings.gradle`, `gradle/`, `gradlew`를 먼저 복사하고, 소스 코드는 마지막에 복사하도록 구성했습니다.  
    이 구조 덕분에 `src`만 수정된 경우 의존성 관련 레이어가 무효화되지 않고 그대로 재사용됩니다.
@@ -258,7 +258,7 @@ ENTRYPOINT ["java", "-jar", "app.jar"] # exec form, 셸 불필요
    실제로 첫 빌드 94.3초, 수정 없는 재빌드 2.1초, 소스 수정 후 재빌드 21.2초로 차이가 분명하게 나타났습니다.
 
 
-### Distroless 채택의 의미
+### 🔍 Distroless 채택의 의미
 
 - **최소 크기**: Shell이나 패키지 매니저처럼 실행에 필요 없는 요소를 제외해서 최종 이미지 크기를 299MB까지 줄였다.
 - **보안 측면**: 기본으로 들어있는 도구가 적어서 컨테이너 내부에서 불필요하게 노출되는 부분이 줄고, 그만큼 공격 표면도 작아진다.
