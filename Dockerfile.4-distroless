@@ -1,0 +1,29 @@
+# =============================================================
+# 4. distroless 적용형: 운영용 최소 이미지
+# =============================================================
+# Google의 distroless 이미지 사용.
+# 셸, 패키지 매니저, 기본 유틸리티 없음 → 공격 표면 최소화.
+# glibc 기반이라 Alpine(musl)의 호환성 문제 없음.
+# 셸이 없으므로 반드시 exec form(배열 형식) 사용.
+# 예상 크기: ~230MB (JRE 대비 ~25% 추가 감소)
+# =============================================================
+
+# --- 빌드 스테이지 ---
+FROM eclipse-temurin:21-jdk AS builder
+
+WORKDIR /app
+COPY . .
+RUN ./gradlew bootJar --no-daemon
+
+# --- 런타임 스테이지 (distroless) ---
+# nonroot 태그: 기본적으로 비root 사용자로 실행됨
+FROM gcr.io/distroless/java21-debian12:nonroot
+
+WORKDIR /app
+
+COPY --from=builder /app/build/libs/docker-optimization-demo-0.0.1-SNAPSHOT.jar app.jar
+
+EXPOSE 8080
+
+# 셸이 없으므로 exec form 필수. shell form("java -jar ...")은 동작하지 않음.
+ENTRYPOINT ["java", "-jar", "app.jar"]

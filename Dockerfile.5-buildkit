@@ -1,0 +1,52 @@
+# =============================================================
+# 5. BuildKit 캐시 적용형: 빌드 시간 개선
+# =============================================================
+# 이미지 크기는 4번(distroless)과 동일하지만, 빌드 속도를 최적화.
+# 핵심 전략:
+#   1) 의존성 파일(build.gradle 등)을 먼저 복사 → 레이어 캐시 활용
+#   2) BuildKit 캐시 마운트 → Gradle 다운로드 캐시 재사용
+#   3) 소스 코드는 마지막에 복사 → 소스만 바뀌면 의존성 레이어 캐시 히트
+#
+# 빌드 명령: DOCKER_BUILDKIT=1 docker build -f Dockerfile.5-buildkit .
+# 예상 크기: ~230MB (distroless와 동일)
+# 재빌드 속도: 소스만 변경 시 의존성 다운로드 스킵 → 수십 초 절약
+# =============================================================
+
+# syntax=docker/dockerfile:1
+
+# --- 빌드 스테이지 ---
+FROM eclipse-temurin:21-jdk AS builder
+
+WORKDIR /app
+
+# 1단계: 의존성 정의 파일만 먼저 복사
+#   → build.gradle, settings.gradle이 안 바뀌면 아래 레이어가 캐시됨
+COPY build.gradle settings.gradle ./
+COPY gradle/ gradle/
+COPY gradlew ./
+RUN chmod +x gradlew
+
+# 2단계: 의존성 다운로드 (캐시 마운트 활용)
+#   → --mount=type=cache로 Gradle 캐시를 빌드 간에 유지
+#   → 의존성이 안 바뀌면 이 레이어 자체가 캐시 히트
+RUN --mount=type=cache,target=/root/.gradle/caches \
+    --mount=type=cache,target=/root/.gradle/wrapper \
+    ./gradlew dependencies --no-daemon
+
+# 3단계: 소스 코드 복사 후 빌드
+#   → 소스만 바뀌면 여기서부터만 재실행됨
+COPY src/ src/
+RUN --mount=type=cache,target=/root/.gradle/caches \
+    --mount=type=cache,target=/root/.gradle/wrapper \
+    ./gradlew bootJar --no-daemon
+
+# --- 런타임 스테이지 (distroless) ---
+FROM gcr.io/distroless/java21-debian12:nonroot
+
+WORKDIR /app
+
+COPY --from=builder /app/build/libs/docker-optimization-demo-0.0.1-SNAPSHOT.jar app.jar
+
+EXPOSE 8080
+
+ENTRYPOINT ["java", "-jar", "app.jar"]

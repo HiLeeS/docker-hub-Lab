@@ -1,0 +1,25 @@
+# =============================================================
+# 3. JRE 기반 경량화형: runtime을 JRE slim으로 교체
+# =============================================================
+# 런타임에 JDK(컴파일러, 개발도구)는 불필요.
+# JRE만 포함하면 이미지 크기가 크게 줄어듦.
+# 예상 크기: ~300MB (JDK 대비 ~30% 추가 감소)
+# =============================================================
+
+# --- 빌드 스테이지 (JDK 필요) ---
+FROM eclipse-temurin:21-jdk AS builder
+
+WORKDIR /app
+COPY . .
+RUN ./gradlew bootJar --no-daemon
+
+# --- 런타임 스테이지 (JRE만 사용) ---
+FROM eclipse-temurin:21-jre
+
+WORKDIR /app
+
+COPY --from=builder /app/build/libs/docker-optimization-demo-0.0.1-SNAPSHOT.jar app.jar
+
+EXPOSE 8080
+
+ENTRYPOINT ["java", "-jar", "app.jar"]
