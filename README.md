@@ -25,51 +25,32 @@ docker-optimization-demo/
 ```
 <br/>
 
-## 📋 API 목록
+## ✨ 단계별 최적화 결과 요약
 
-| Method | Path | 설명 |
-|--------|------|------|
-| GET | `/api/health` | 헬스체크 (Java 버전, OS, 메모리 정보) |
-| GET | `/api/hello?name=xxx` | 인사 메시지 |
-| POST | `/api/messages` | 메시지 등록 (`{"content":"..."}`) |
-| GET | `/api/messages` | 메시지 전체 조회 |
-
-<br/>
-
-## ✨ 최적화 흐름 요약
-
-| 단계 | Dockerfile | 핵심 변경 | 예상 크기 | 감소율 |
+| 단계 | Dockerfile | 핵심 변경 | 이미지 크기 | 감소율 |
 |------|------------|-----------|-----------|--------|
-| 1 | basic | JDK + 소스 + 캐시 전부 포함 | ~700MB | - |
-| 2 | multistage | builder/runtime 분리, 빌드 산출물만 복사 | ~450MB | ~35% |
-| 3 | jre | 런타임을 JDK → JRE로 교체 | ~300MB | ~57% |
-| 4 | distroless | 셸/패키지매니저 없는 최소 이미지 | ~230MB | ~67% |
-| 5 | buildkit | 4번 + Gradle 캐시 마운트로 빌드 속도 개선 | ~230MB | ~67% |
+| 1 | basic | JDK & 실행 파일 | 1.12GB | - |
+| 2 | multistage | builder/runtime 분리, 빌드 산출물만 복사 | 713MB | 36% |
+| 3 | jre | 런타임을 JDK에서 JRE로 교체 | 441MB | 60% |
+| 4 | distroless | 셸/패키지매니저 없는 최소 이미지 | 299MB | 74% |
+| 5 | buildkit | 4단계 & Gradle 캐시 마운트로 빌드 속도 개선 | 299MB | 74% |
 
 <br/>
 
 
 ## 🛠️ 초기 세팅
 
-프로젝트에는 Gradle Wrapper 바이너리(`gradle-wrapper.jar`)가 포함되어 있지 않습니다.
-로컬에 Gradle이 설치되어 있다면 아래 명령으로 Wrapper를 생성하세요:
+프로젝트에는 실행 파일이 포함되어 있지 않습니다.
+로컬에 Gradle을 아래 명령어로 설치하세요.
 
 ```bash
-# 프로젝트 루트에서 실행
+sudo snap install gradle --classic
 gradle wrapper --gradle-version 8.10
 ```
-
-Gradle이 없다면 [SDKMAN](https://sdkman.io/)으로 설치할 수 있습니다:
-```bash
-sdk install gradle 8.10
-gradle wrapper --gradle-version 8.10
-```
-
-이후 `gradlew`, `gradlew.bat`, `gradle/wrapper/gradle-wrapper.jar`가 생성됩니다.
 
 <br/>
 
-## ⚙️ 빌드 방법
+## ⚙️ 도커 파일 빌드 
 
 ### 전체 빌드 & 비교
 ```bash
