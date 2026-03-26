@@ -117,15 +117,18 @@ DOCKER_BUILDKIT=1 docker build -f Dockerfile.5-buildkit -t demo-5-buildkit .
 
 ### 2-1. 초기 빌드
 
-![초기 빌드](./images/buildkit_1.png)
-
-![초기 빌드](./images/buildkit_2.png)
+<p align="left">
+  <img src="./images/buildkit_1.png" width="65%" alt="초기 빌드1">
+  <img src="./images/buildkit_2.png" width="65%" alt="초기 빌드2">
+</p>
 
 - 캐시 마운트 과정이 필요
 
 ### 2-2. 코드 수정 후 재빌드
 
-![재빌드](./images/buildkit_3.png)
+<p align="left">
+  <img src="./images/buildkit_3.png" width="65%" alt="재빌드">
+</p>
 
 | 빌드 방식 | 최초 빌드 (Cold) | 소스 수정 후 재빌드 (Hot) | 핵심 차이 |
 |:---:|:---:|:---:|:---|
@@ -188,7 +191,9 @@ docker history demo-1-basic
 docker history demo-5-buildkit
 ```
 
-![레이어 상세](./images/layer_detail.png)
+<p align="left">
+  <img src="./images/layer_detail.png" width="65%" alt="레이어 상세">
+</p>
 
 `docker history` 실행 시 나타나는 `<missing>` 은 **캐시로 활용되는 레이어**입니다.
 
