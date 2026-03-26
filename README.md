@@ -199,7 +199,10 @@ docker history demo-5-buildkit
 
 ### 3. 멀티스테이지 빌드의 동작 원리
 
-![멀티스테이지1](./images/multi_stage_1.png) ![멀티스테이지2](./images/multi_stage_2.png)
+<p align="center">
+  <img src="./images/multi_stage_1.png" width="45%" alt="멀티스테이지1">
+  <img src="./images/multi_stage_2.png" width="45%" alt="멀티스테이지2">
+</p>
 
 ```bash
 FROM eclipse-temurin:21-jdk AS builder    # 빌드용 (버려짐)
@@ -207,8 +210,10 @@ FROM eclipse-temurin:21-jdk               # 런타임용 (이게 남음)
 ```
 Dockerfile 내에 여러 개의 `FROM` 절이 존재하더라도, 도커는 **마지막 `FROM` 절부터 시작하는 스테이지만을 최종 이미지로 빌드**합니다.
 
-
-![멀티스테이지3](./images/multi_stage_3.png) ![멀티스테이지4](./images/multi_stage_4.png)
+<p align="center">
+  <img src="./images/multi_stage_3.png" width="45%" alt="멀티스테이지3">
+  <img src="./images/multi_stage_4.png" width="45%" alt="멀티스테이지4">
+</p>
 
 ```bash
 # 빌드 스테이지 — eclipse-temurin:21-jdk (셸 있음)
