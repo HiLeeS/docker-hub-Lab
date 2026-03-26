@@ -48,6 +48,7 @@ docker-optimization-demo/
 
 <br/>
 
+
 ## 초기 세팅
 
 프로젝트에는 Gradle Wrapper 바이너리(`gradle-wrapper.jar`)가 포함되어 있지 않습니다.
@@ -101,7 +102,7 @@ DOCKER_BUILDKIT=1 docker build -f Dockerfile.5-buildkit -t demo-5-buildkit .
 ### 1. 이미지 크기
 최종 단계인 Distroless 적용 시, 기본형 대비 **약 74%의 용량을 절감**했습니다.
 
-<!이미지>
+![이미지 크기 비교](./images/image_size.png)
 
 | 이미지 명 | 태그 | 크기 | 감소율(1번 대비) | 비고 |
 |:---|:---|:---|:---:|:---|
@@ -116,14 +117,15 @@ DOCKER_BUILDKIT=1 docker build -f Dockerfile.5-buildkit -t demo-5-buildkit .
 
 ### 2-1. 초기 빌드
 
-<!이미지>
+![초기 빌드](./images/buildkit_1.png)
+
+![초기 빌드](./images/buildkit_2.png)
 
 - 캐시 마운트 과정이 필요
 
 ### 2-2. 코드 수정 후 재빌드
 
-<!이미지>
-
+![재빌드](./images/buildkit_3.png)
 
 | 빌드 방식 | 최초 빌드 (Cold) | 소스 수정 후 재빌드 (Hot) | 핵심 차이 |
 |:---:|:---:|:---:|:---|
@@ -186,7 +188,7 @@ docker history demo-1-basic
 docker history demo-5-buildkit
 ```
 
-<!이미지>
+![레이어 상세](./images/layer_detail.png)
 
 `docker history` 실행 시 나타나는 `<missing>` 은 **캐시로 활용되는 레이어**입니다.
 
@@ -197,7 +199,7 @@ docker history demo-5-buildkit
 
 ### 3. 멀티스테이지 빌드의 동작 원리
 
-<!이미지>
+![멀티스테이지1](./images/multi_stage_1.png) ![멀티스테이지2](./images/multi_stage_2.png)
 
 ```bash
 FROM eclipse-temurin:21-jdk AS builder    # 빌드용 (버려짐)
@@ -206,7 +208,7 @@ FROM eclipse-temurin:21-jdk               # 런타임용 (이게 남음)
 Dockerfile 내에 여러 개의 `FROM` 절이 존재하더라도, 도커는 **마지막 `FROM` 절부터 시작하는 스테이지만을 최종 이미지로 빌드**합니다.
 
 
-<!이미지>
+![멀티스테이지3](./images/multi_stage_3.png) ![멀티스테이지4](./images/multi_stage_4.png)
 
 ```bash
 # 빌드 스테이지 — eclipse-temurin:21-jdk (셸 있음)
@@ -222,7 +224,7 @@ COPY --from=builder ...jar app.jar    # 파일 복사일 뿐, 셸 불필요
 ENTRYPOINT ["java", "-jar", "app.jar"] # exec form, 셸 불필요
 ```
 
-<!이미지>
+![멀티스테이지5](./images/multi_stage_5.png)
 
 ---
 
