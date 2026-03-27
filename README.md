@@ -111,6 +111,10 @@ DOCKER_BUILDKIT=1 docker build -f Dockerfile.5-buildkit -t demo-5-buildkit .
   <img src="./images/buildkit_3.png" width="85%" alt="재빌드">
 </p>
 
+- 빨간 박스는 일반 Docker 레이어 캐시로 재사용된 단계이고, 파란 줄은 수정된 소스가 다시 반영되는 지점이다.
+- 소스 변경 이후 단계는 다시 실행되지만, BuildKit은 이때도 Gradle 캐시를 활용해 의존성 준비 비용을 줄여 재빌드 시간을 더 단축한다.
+
+
 | 빌드 방식 | 최초 빌드 (Cold) | 소스 수정 후 재빌드 (Hot) | 핵심 차이 |
 |:---:|:---:|:---:|:---|
 | **일반 멀티스테이지 (2~4번)** | 약 90s | **약 90s+** | 소스 수정 시 캐시가 깨져 의존성을 다시 다운로드함 |
